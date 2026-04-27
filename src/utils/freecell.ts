@@ -82,10 +82,14 @@ export function applyMove(
 
   // Remove cards from source
   if (source.type === 'tableau') {
-    newState.tableau[source.columnIndex] = newState.tableau[source.columnIndex].slice(
-      0,
-      source.cardIndex
-    );
+    const col = newState.tableau[source.columnIndex];
+    // Keep cards before the selection AND any cards that may exist after it.
+    // (In valid play the stack always reaches the column end, but this prevents
+    //  data loss if a mid-column card is somehow selected.)
+    newState.tableau[source.columnIndex] = [
+      ...col.slice(0, source.cardIndex),
+      ...col.slice(source.cardIndex + cards.length),
+    ];
   } else if (source.type === 'freecell') {
     newState.freeCells[source.cellIndex] = null;
   } else if (source.type === 'foundation') {

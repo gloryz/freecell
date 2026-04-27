@@ -311,6 +311,10 @@ export default function GameBoard() {
     }
     if (column.length === 0 || cardIndex >= column.length) return
     const cards = buildStack(column, cardIndex)
+    // 선택한 스택이 컬럼 끝까지 이어지지 않으면 이동 불가 (중간 카드 선택 방지)
+    if (cardIndex + cards.length !== column.length) {
+      flashInvalid(`tableau-${columnIndex}`); return
+    }
     selectCard(cards[0], { type: 'tableau', columnIndex, cardIndex }, cards)
   }
 
@@ -358,6 +362,7 @@ export default function GameBoard() {
     const column = gameState.tableau[columnIndex]
     if (cardIndex >= column.length) return
     const cards = buildStack(column, cardIndex)
+    if (cardIndex + cards.length !== column.length) return
     setDragSource({ cards, source: { type: 'tableau', columnIndex, cardIndex } })
   }
 
