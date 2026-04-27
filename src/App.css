@@ -9,6 +9,7 @@ body {
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
+  overflow: hidden;
 }
 
 .app {
@@ -33,6 +34,15 @@ body {
   text-transform: uppercase;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   color: #f0d060;
+}
+
+.app-version {
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.4);
+  vertical-align: middle;
+  text-transform: none;
 }
 
 main {

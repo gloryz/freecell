@@ -4,7 +4,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>FreeCell</h1>
+        <h1>FreeCell <span className="app-version">v{__APP_VERSION__}</span></h1>
       </header>
       <main>
         <GameBoard />
