@@ -1,0 +1,107 @@
+.card {
+  width: 144px;
+  height: 200px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #aaa;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 10px;
+  user-select: none;
+  transition: box-shadow 0.1s, transform 0.1s;
+  flex-shrink: 0;
+}
+
+.card:hover {
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
+}
+
+.card.selected {
+  border: 2px solid #1a6ef5;
+  box-shadow: 0 0 0 3px rgba(26, 110, 245, 0.45), 2px 4px 8px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px);
+}
+
+.card.red {
+  color: #cc1111;
+}
+
+.card.black {
+  color: #111;
+}
+
+.card-top-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.card-bottom-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  transform: rotate(180deg);
+}
+
+.card-rank {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.card-suit {
+  font-size: 24px;
+  margin-top: 2px;
+}
+
+.card-center-suit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 56px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.card.dragging {
+  opacity: 0.35;
+  cursor: grabbing;
+}
+
+/* Slot placeholder styling */
+.card-slot-empty {
+  width: 144px;
+  height: 200px;
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.card-slot-empty:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.card-slot-empty.highlight {
+  border-color: #1a6ef5;
+  background: rgba(26, 110, 245, 0.15);
+}
+
+.slot-label {
+  font-size: 56px;
+  opacity: 0.45;
+  color: #fff;
+}

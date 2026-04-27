@@ -1,0 +1,328 @@
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 1440px;
+}
+
+/* Top bar: free cells + info + foundations */
+.top-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.free-cells {
+  display: flex;
+  gap: 6px;
+}
+
+.foundations {
+  display: flex;
+  gap: 6px;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.deal-number {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.5px;
+}
+
+.deal-input-row {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.deal-input {
+  width: 110px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 0.85rem;
+  text-align: center;
+  outline: none;
+}
+
+.deal-input:focus {
+  border-color: rgba(160, 200, 255, 0.6);
+}
+
+.deal-input::-webkit-inner-spin-button,
+.deal-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.deal-error {
+  font-size: 0.78rem;
+  color: #ff8080;
+}
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 0.82rem;
+}
+
+.btn-records {
+  background: #4a3a6a;
+  border-color: #7a5aaa;
+}
+
+.btn-records:hover {
+  background: #5a4a7a;
+}
+
+.moves-counter {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f0d060;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+.timer {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #a0e0ff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-retry {
+  background: #2a5a7a;
+  border-color: #4a8aaa;
+}
+
+.btn-retry:hover {
+  background: #3a7a9a;
+}
+
+.btn-quit {
+  background: #7a2a2a;
+  border-color: #aa4a4a;
+}
+
+.btn-quit:hover {
+  background: #9a3a3a;
+}
+
+.btn-pause {
+  background: #4a5a8a;
+  border-color: #6a7aaa;
+}
+
+.btn-pause:hover {
+  background: #5a6a9a;
+}
+
+.pause-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.pause-modal h2 {
+  color: #a0c8ff;
+}
+
+.btn-undo {
+  background: #6a4a2a;
+  border-color: #9a6a4a;
+}
+
+.btn-undo:hover:not(:disabled) {
+  background: #8a6a3a;
+}
+
+.btn-undo:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn {
+  background: #2a7a3a;
+  color: #fff;
+  border: 2px solid #4aaa5a;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  background: #3a9a4a;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Tableau */
+.tableau-area {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* The tableau needs extra height for tall stacks */
+.tableau-wrapper {
+  position: relative;
+  width: 144px;
+  flex-shrink: 0;
+}
+
+/* Win overlay */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.win-modal {
+  background: linear-gradient(135deg, #1a5c2a, #2a7a3a);
+  border: 3px solid #f0d060;
+  border-radius: 16px;
+  padding: 48px 64px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.win-modal h2 {
+  font-size: 3rem;
+  color: #f0d060;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+  margin-bottom: 8px;
+}
+
+.win-modal p {
+  font-size: 1.2rem;
+  color: #d0f0d0;
+  margin-bottom: 28px;
+}
+
+.win-modal .btn {
+  font-size: 1.1rem;
+  padding: 10px 30px;
+}
+
+/* Win modal: global submit */
+.win-global {
+  margin-bottom: 20px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-submit-status {
+  font-size: 0.95rem;
+}
+
+.submit-pending { color: rgba(255,255,255,0.6); }
+.submit-ok      { color: #80ffb0; font-weight: 600; }
+.submit-fail    { color: #ff8080; }
+
+.win-nickname-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.win-nickname-label {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.win-nickname-input {
+  width: 160px;
+  padding: 5px 10px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.win-nickname-input:focus {
+  border-color: rgba(160,200,255,0.6);
+}
+
+.btn-submit-global {
+  background: #2a5a9a;
+  border-color: #4a7acd;
+}
+
+.btn-submit-global:hover:not(:disabled) {
+  background: #3a6aaa;
+}
+
+.btn-submit-global:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Invalid move flash */
+.invalid-flash {
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}

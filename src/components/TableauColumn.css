@@ -1,0 +1,16 @@
+.tableau-column {
+  position: relative;
+  width: 144px;
+  /* height is computed dynamically by children */
+  min-height: 220px;
+  flex-shrink: 0;
+}
+
+.tableau-column-empty {
+  display: flex;
+  align-items: flex-start;
+}
+
+.tableau-empty-slot {
+  flex-shrink: 0;
+}
