@@ -404,12 +404,44 @@ export default function GameBoard() {
     <div className="game-board">
       {/* TOP AREA */}
       <div className="top-area">
-        {/* Controls row */}
-        <div className="top-controls">
+        {/* Free Cells */}
+        <div className="free-cells">
+          {freeCells.map((card, idx) => {
+            const isSelected =
+              selectedCard?.source.type === 'freecell' &&
+              selectedCard.source.cellIndex === idx
+            const isDragging =
+              dragSource?.source.type === 'freecell' &&
+              dragSource.source.cellIndex === idx
+            return (
+              <div
+                key={idx}
+                className={invalidSource === `freecell-${idx}` ? 'invalid-flash' : ''}
+              >
+                <FreeCellSlot
+                  card={card}
+                  cellIndex={idx}
+                  selected={isSelected}
+                  dragging={isDragging}
+                  hasSelection={hasSelection && !isSelected}
+                  onClick={() => handleFreeCellClick(idx)}
+                  onDoubleClick={() => handleFreeCellDoubleClick(idx)}
+                  onDragStart={() => handleFreeCellDragStart(idx)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDropOnFreeCell(idx)}
+                />
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Center info + buttons */}
+        <div className="game-info">
           <span className="deal-number">Deal #{dealNumber}</span>
           <span className="moves-counter">Moves: {moves}</span>
           <span className="timer">{formatTime(elapsed)}{!started ? '' : !windowFocused && !paused ? ' ⏸' : ''}</span>
-          <div className="btn-row">
+          <div className="btn-col">
             {!won && started && (
               <button className="btn btn-pause" onClick={handleTogglePause}>
                 {paused ? '▶ Resume' : '⏸ Pause'}
@@ -425,59 +457,24 @@ export default function GameBoard() {
           </div>
         </div>
 
-        {/* Card slots row */}
-        <div className="top-cards">
-          {/* Free Cells */}
-          <div className="free-cells">
-            {freeCells.map((card, idx) => {
-              const isSelected =
-                selectedCard?.source.type === 'freecell' &&
-                selectedCard.source.cellIndex === idx
-              const isDragging =
-                dragSource?.source.type === 'freecell' &&
-                dragSource.source.cellIndex === idx
-              return (
-                <div
-                  key={idx}
-                  className={invalidSource === `freecell-${idx}` ? 'invalid-flash' : ''}
-                >
-                  <FreeCellSlot
-                    card={card}
-                    cellIndex={idx}
-                    selected={isSelected}
-                    dragging={isDragging}
-                    hasSelection={hasSelection && !isSelected}
-                    onClick={() => handleFreeCellClick(idx)}
-                    onDoubleClick={() => handleFreeCellDoubleClick(idx)}
-                    onDragStart={() => handleFreeCellDragStart(idx)}
-                    onDragEnd={handleDragEnd}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => handleDropOnFreeCell(idx)}
-                  />
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Foundations */}
-          <div className="foundations">
-            {SUITS.map((suit, idx) => (
-              <div
-                key={suit}
-                className={invalidSource === `foundation-${idx}` ? 'invalid-flash' : ''}
-              >
-                <FoundationSlot
-                  foundation={foundations[idx]}
-                  suit={suit}
-                  suitIndex={idx}
-                  hasSelection={hasSelection}
-                  onClick={() => handleFoundationClick(idx)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDropOnFoundation(idx)}
-                />
-              </div>
-            ))}
-          </div>
+        {/* Foundations */}
+        <div className="foundations">
+          {SUITS.map((suit, idx) => (
+            <div
+              key={suit}
+              className={invalidSource === `foundation-${idx}` ? 'invalid-flash' : ''}
+            >
+              <FoundationSlot
+                foundation={foundations[idx]}
+                suit={suit}
+                suitIndex={idx}
+                hasSelection={hasSelection}
+                onClick={() => handleFoundationClick(idx)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDropOnFoundation(idx)}
+              />
+            </div>
+          ))}
         </div>
       </div>
 

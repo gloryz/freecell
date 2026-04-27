@@ -7,27 +7,11 @@
   max-width: 1440px;
 }
 
-/* Top area: two rows — controls then card slots */
+/* Top bar: free cells | info+buttons | foundations */
 .top-area {
   display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 10px;
-}
-
-.top-controls {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.top-cards {
-  display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   width: 100%;
 }
 
@@ -39,6 +23,23 @@
 .foundations {
   display: flex;
   gap: 6px;
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 0 24px;
+}
+
+.btn-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  align-items: stretch;
 }
 
 .deal-number {
