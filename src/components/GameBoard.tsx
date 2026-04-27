@@ -104,6 +104,7 @@ export default function GameBoard() {
   const [invalidSource, setInvalidSource] = useState<string | null>(null)
   const [dragSource, setDragSource] = useState<{ cards: Card[]; source: CardSource } | null>(null)
   const [elapsed, setElapsed] = useState(0)
+  const [started, setStarted] = useState(false)
   const [paused, setPaused] = useState(false)
   const [history, setHistory] = useState<GameState[]>([])
   const [windowFocused, setWindowFocused] = useState(true)
@@ -124,12 +125,12 @@ export default function GameBoard() {
     }
   }, [])
 
-  // Timer: won / paused / 포커스 없을 때 정지
+  // Timer: 첫 조작 전 / won / paused / 포커스 없을 때 정지
   useEffect(() => {
-    if (gameState.won || paused || !windowFocused) return
+    if (!started || gameState.won || paused || !windowFocused) return
     const id = setInterval(() => setElapsed(e => e + 1), 1000)
     return () => clearInterval(id)
-  }, [gameState.won, paused, windowFocused])
+  }, [started, gameState.won, paused, windowFocused])
 
   // 게임 클리어 시 로컬 기록 저장 + 글로벌 자동 제출 (닉네임이 있는 경우)
   useEffect(() => {
@@ -178,6 +179,7 @@ export default function GameBoard() {
     setDealNumber(newDeal)
     setGameState(createGameState(newDeal))
     setElapsed(0)
+    setStarted(false)
     setDragSource(null)
     setPaused(false)
     setHistory([])
@@ -188,6 +190,7 @@ export default function GameBoard() {
     setDealNumber(n)
     setGameState(createGameState(n))
     setElapsed(0)
+    setStarted(false)
     setDragSource(null)
     setPaused(false)
     setHistory([])
@@ -219,6 +222,11 @@ export default function GameBoard() {
 
   function clearSelection() {
     setGameState(prev => ({ ...prev, selectedCard: null }))
+  }
+
+  // ---- Start timer on first interaction ----
+  function startIfNeeded() {
+    if (!started) setStarted(true)
   }
 
   // ---- History ----
@@ -257,6 +265,7 @@ export default function GameBoard() {
       }
     }
 
+    startIfNeeded()
     pushHistory()
     setGameState(s => applyMove(s, cards, source, dest))
     return true
@@ -318,6 +327,7 @@ export default function GameBoard() {
     // 1순위: 파운데이션으로 이동
     const suitIndex = foundationIndexForSuit(card.suit)
     if (canPlaceOnFoundation(card, foundations[suitIndex])) {
+      startIfNeeded()
       pushHistory()
       setGameState(s => applyMove(s, [card], source, { type: 'foundation', suitIndex }))
       return
@@ -325,6 +335,7 @@ export default function GameBoard() {
     // 2순위: 빈 프리셀로 이동
     const emptyCellIndex = freeCells.findIndex(c => c === null)
     if (emptyCellIndex !== -1) {
+      startIfNeeded()
       pushHistory()
       setGameState(s => applyMove(s, [card], source, { type: 'freecell', cellIndex: emptyCellIndex }))
     }
@@ -429,9 +440,9 @@ export default function GameBoard() {
         <div className="game-info">
           <span className="deal-number">Deal #{dealNumber}</span>
           <span className="moves-counter">Moves: {moves}</span>
-          <span className="timer">{formatTime(elapsed)}{!windowFocused && !paused ? ' ⏸' : ''}</span>
+          <span className="timer">{formatTime(elapsed)}{!started ? '' : !windowFocused && !paused ? ' ⏸' : ''}</span>
           <div className="btn-row">
-            {!won && (
+            {!won && started && (
               <button className="btn btn-pause" onClick={handleTogglePause}>
                 {paused ? '▶ Resume' : '⏸ Pause'}
               </button>
