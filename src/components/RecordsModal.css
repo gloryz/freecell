@@ -74,6 +74,42 @@
   text-align: left;
 }
 
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.week-nav-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a0c8ff;
+  min-width: 110px;
+  text-align: center;
+}
+
+.week-nav-btn {
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: rgba(160, 200, 255, 0.7);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 2px 8px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.week-nav-btn:hover:not(:disabled) {
+  background: rgba(160, 200, 255, 0.15);
+  color: #a0c8ff;
+}
+
+.week-nav-btn:disabled {
+  color: rgba(160, 200, 255, 0.2);
+  cursor: default;
+}
+
 /* Deal filter label */
 .global-filter-label {
   display: flex;

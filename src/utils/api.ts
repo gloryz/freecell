@@ -22,6 +22,50 @@ export function localDayEnd(): string {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).toISOString()
 }
 
+// 해당 날짜가 속한 주의 월요일 (로컬 시간 기준)
+function getMondayOf(d: Date): Date {
+  const copy = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const day = copy.getDay() // 0=일, 1=월, ..., 6=토
+  copy.setDate(copy.getDate() + (day === 0 ? -6 : 1 - day))
+  return copy
+}
+
+// weekOffset=0: 이번 주 월요일, -1: 지난 주 월요일, ...
+export function localWeekStart(weekOffset = 0): string {
+  const m = getMondayOf(new Date())
+  m.setDate(m.getDate() + weekOffset * 7)
+  return m.toISOString()
+}
+
+export function localWeekEnd(weekOffset = 0): string {
+  const m = getMondayOf(new Date())
+  m.setDate(m.getDate() + weekOffset * 7 + 6)
+  return new Date(m.getFullYear(), m.getMonth(), m.getDate(), 23, 59, 59, 999).toISOString()
+}
+
+export interface WeekInfo {
+  label: string  // "2026년 18주차"
+  range: string  // "4/28 ~ 5/4"
+  year: number
+  week: number
+}
+
+export function getWeekInfo(weekOffset = 0): WeekInfo {
+  const m = getMondayOf(new Date())
+  m.setDate(m.getDate() + weekOffset * 7)
+  const sun = new Date(m)
+  sun.setDate(sun.getDate() + 6)
+
+  // ISO 주차: 해당 주의 목요일 기준 연도·주번호 계산
+  const thu = new Date(Date.UTC(m.getFullYear(), m.getMonth(), m.getDate() + 3))
+  const yearStart = new Date(Date.UTC(thu.getUTCFullYear(), 0, 1))
+  const week = Math.ceil(((thu.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+  const year = thu.getUTCFullYear()
+
+  const fmt = (d: Date) => d.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+  return { label: `${year}년 ${week}주차`, range: `${fmt(m)} ~ ${fmt(sun)}`, year, week }
+}
+
 export async function fetchGlobalRecords(opts?: {
   from?: string  // UTC ISO timestamp: 이 시각 이후
   to?: string    // UTC ISO timestamp: 이 시각 이전

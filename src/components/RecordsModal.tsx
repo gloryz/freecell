@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRecords, clearRecords } from '../utils/records'
-import { fetchGlobalRecords, localDayStart, localDayEnd, GlobalRecord } from '../utils/api'
+import { fetchGlobalRecords, localDayStart, localDayEnd, localWeekStart, localWeekEnd, getWeekInfo, GlobalRecord } from '../utils/api'
 import './RecordsModal.css'
 
 interface RecordsModalProps {
@@ -24,19 +24,20 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
   const [globalLoading, setGlobalLoading] = useState(false)
   const [globalError, setGlobalError] = useState(false)
   const [period, setPeriod] = useState<Period>('week')
+  const [weekOffset, setWeekOffset] = useState(0)
 
   useEffect(() => {
     if (tab !== 'global') return
     setGlobalLoading(true)
     setGlobalError(false)
     fetchGlobalRecords({
-      from: period === 'today' ? localDayStart(0)  : period === 'week' ? localDayStart(6) : undefined,
-      to:   period === 'today' ? localDayEnd()      : undefined,
+      from: period === 'today' ? localDayStart(0) : period === 'week' ? localWeekStart(weekOffset) : undefined,
+      to:   period === 'today' ? localDayEnd()     : period === 'week' ? localWeekEnd(weekOffset)   : undefined,
     })
       .then(data => { setGlobalRecords(data) })
       .catch(() => setGlobalError(true))
       .finally(() => setGlobalLoading(false))
-  }, [tab, period])
+  }, [tab, period, weekOffset])
 
   function handleClear() {
     if (!confirm('모든 기록을 삭제할까요?')) return
@@ -44,11 +45,12 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
     setRecords([])
   }
 
-  const periodSubtitle = {
-    today: `${new Date().toLocaleDateString('ko-KR')} 최고 기록 (플레이어별 1위)`,
-    week: '최근 7일 · 날짜별 플레이어 최고기록',
-    all: '전체 기간 · 날짜별 플레이어 최고기록',
-  }[period]
+  const weekInfo = getWeekInfo(weekOffset)
+
+  const periodSubtitle =
+    period === 'today' ? `${new Date().toLocaleDateString('ko-KR')} 최고 기록 (플레이어별 1위)`
+    : period === 'week' ? `${weekInfo.label} (${weekInfo.range})`
+    : '전체 기간 · 날짜별 플레이어 최고기록'
 
   const showDate = period !== 'today'
 
@@ -123,12 +125,24 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
                 <button
                   className={`period-tab${period === 'week' ? ' active' : ''}`}
                   onClick={() => setPeriod('week')}
-                >일주일</button>
+                >시즌</button>
                 <button
                   className={`period-tab${period === 'all' ? ' active' : ''}`}
                   onClick={() => setPeriod('all')}
                 >전체</button>
               </div>
+
+              {period === 'week' && (
+                <div className="week-nav">
+                  <button className="week-nav-btn" onClick={() => setWeekOffset(w => w - 1)}>‹</button>
+                  <span className="week-nav-label">{weekInfo.label}</span>
+                  <button
+                    className="week-nav-btn"
+                    onClick={() => setWeekOffset(w => w + 1)}
+                    disabled={weekOffset >= 0}
+                  >›</button>
+                </div>
+              )}
             </div>
 
             <p className="period-subtitle">{periodSubtitle}</p>
@@ -141,7 +155,7 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
             )}
             {!globalLoading && !globalError && globalRecords.length === 0 && (
               <p className="records-empty">
-                {period === 'today' ? '오늘 아직 기록이 없습니다.' : '글로벌 기록이 없습니다.'}
+                {period === 'today' ? '오늘 아직 기록이 없습니다.' : '기록이 없습니다.'}
               </p>
             )}
             {!globalLoading && !globalError && globalRecords.length > 0 && (

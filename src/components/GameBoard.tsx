@@ -275,7 +275,9 @@ export default function GameBoard() {
     }
     const card = freeCells[cellIndex]
     if (!card) return
-    selectCard(card, { type: 'freecell', cellIndex }, [card])
+    if (!tryAutoMove(card, { type: 'freecell', cellIndex })) {
+      selectCard(card, { type: 'freecell', cellIndex }, [card])
+    }
   }
 
   function handleFoundationClick(suitIndex: number) {
@@ -304,9 +306,11 @@ export default function GameBoard() {
     }
     if (column.length === 0 || cardIndex >= column.length) return
     const cards = buildStack(column, cardIndex)
-    // 선택한 스택이 컬럼 끝까지 이어지지 않으면 이동 불가 (중간 카드 선택 방지)
     if (cardIndex + cards.length !== column.length) {
       flashInvalid(`tableau-${columnIndex}`); return
+    }
+    if (cards.length === 1) {
+      if (tryAutoMove(cards[0], { type: 'tableau', columnIndex, cardIndex })) return
     }
     selectCard(cards[0], { type: 'tableau', columnIndex, cardIndex }, cards)
   }
@@ -318,24 +322,24 @@ export default function GameBoard() {
     clearSelection()
   }
 
-  // ---- Double-click: auto-move to foundation ----
-  function tryAutoMove(card: Card, source: CardSource) {
+  // ---- Auto-move to foundation or freecell ----
+  function tryAutoMove(card: Card, source: CardSource): boolean {
     const { foundations, freeCells } = gameState
-    // 1순위: 파운데이션으로 이동
     const suitIndex = foundationIndexForSuit(card.suit)
     if (canPlaceOnFoundation(card, foundations[suitIndex])) {
       startIfNeeded()
       pushHistory()
       setGameState(s => applyMove(s, [card], source, { type: 'foundation', suitIndex }))
-      return
+      return true
     }
-    // 2순위: 빈 프리셀로 이동
     const emptyCellIndex = freeCells.findIndex(c => c === null)
     if (emptyCellIndex !== -1) {
       startIfNeeded()
       pushHistory()
       setGameState(s => applyMove(s, [card], source, { type: 'freecell', cellIndex: emptyCellIndex }))
+      return true
     }
+    return false
   }
 
   function handleTableauDoubleClick(columnIndex: number, cardIndex: number) {
