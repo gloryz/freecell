@@ -10,25 +10,27 @@ export interface GlobalRecord {
   rank: number
 }
 
-export function todayDateString(): string {
-  return new Date().toISOString().slice(0, 10)
+// 로컬 N일 전 자정 → UTC ISO
+export function localDayStart(daysAgo = 0): string {
+  const d = new Date()
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - daysAgo).toISOString()
 }
 
-export function weekStartDateString(): string {
+// 로컬 오늘 끝 (23:59:59) → UTC ISO
+export function localDayEnd(): string {
   const d = new Date()
-  d.setDate(d.getDate() - 6)
-  return d.toISOString().slice(0, 10)
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).toISOString()
 }
 
 export async function fetchGlobalRecords(opts?: {
-  date?: string  // YYYY-MM-DD: 해당 날짜 플레이어별 최고기록
-  from?: string  // YYYY-MM-DD: 이 날짜 이후 날짜별·플레이어별 최고기록
+  from?: string  // UTC ISO timestamp: 이 시각 이후
+  to?: string    // UTC ISO timestamp: 이 시각 이전
 }): Promise<GlobalRecord[]> {
   if (!API_URL) return []
   try {
     const params = new URLSearchParams()
-    if (opts?.date) params.set('date', opts.date)
     if (opts?.from) params.set('from', opts.from)
+    if (opts?.to)   params.set('to', opts.to)
     const url = `${API_URL}/api/records${params.size ? '?' + params.toString() : ''}`
     const res = await fetch(url)
     if (!res.ok) return []

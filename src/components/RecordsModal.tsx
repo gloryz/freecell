@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRecords, clearRecords } from '../utils/records'
-import { fetchGlobalRecords, todayDateString, weekStartDateString, GlobalRecord } from '../utils/api'
+import { fetchGlobalRecords, localDayStart, localDayEnd, GlobalRecord } from '../utils/api'
 import './RecordsModal.css'
 
 interface RecordsModalProps {
@@ -30,8 +30,8 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
     setGlobalLoading(true)
     setGlobalError(false)
     fetchGlobalRecords({
-      date: period === 'today' ? todayDateString() : undefined,
-      from: period === 'week' ? weekStartDateString() : undefined,
+      from: period === 'today' ? localDayStart(0)  : period === 'week' ? localDayStart(6) : undefined,
+      to:   period === 'today' ? localDayEnd()      : undefined,
     })
       .then(data => { setGlobalRecords(data) })
       .catch(() => setGlobalError(true))
