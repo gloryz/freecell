@@ -11,18 +11,24 @@ export interface GlobalRecord {
 }
 
 export function todayDateString(): string {
-  return new Date().toISOString().slice(0, 10) // YYYY-MM-DD (UTC)
+  return new Date().toISOString().slice(0, 10)
+}
+
+export function weekStartDateString(): string {
+  const d = new Date()
+  d.setDate(d.getDate() - 6)
+  return d.toISOString().slice(0, 10)
 }
 
 export async function fetchGlobalRecords(opts?: {
-  dealNumber?: number
-  date?: string // YYYY-MM-DD; if provided, returns daily best-per-player
+  date?: string  // YYYY-MM-DD: 해당 날짜 플레이어별 최고기록
+  from?: string  // YYYY-MM-DD: 이 날짜 이후 날짜별·플레이어별 최고기록
 }): Promise<GlobalRecord[]> {
   if (!API_URL) return []
   try {
     const params = new URLSearchParams()
-    if (opts?.dealNumber) params.set('dealNumber', String(opts.dealNumber))
     if (opts?.date) params.set('date', opts.date)
+    if (opts?.from) params.set('from', opts.from)
     const url = `${API_URL}/api/records${params.size ? '?' + params.toString() : ''}`
     const res = await fetch(url)
     if (!res.ok) return []

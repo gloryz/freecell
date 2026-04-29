@@ -186,16 +186,6 @@ export default function GameBoard() {
     setSubmitStatus('idle')
   }, [])
 
-  const handleSelectDeal = useCallback((n: number) => {
-    setDealNumber(n)
-    setGameState(createGameState(n))
-    setElapsed(0)
-    setStarted(false)
-    setDragSource(null)
-    setPaused(false)
-    setHistory([])
-    setSubmitStatus('idle')
-  }, [])
 
   const handleTogglePause = useCallback(() => {
     setPaused(prev => !prev)
@@ -276,6 +266,8 @@ export default function GameBoard() {
     const { freeCells, selectedCard } = gameState
     if (selectedCard) {
       if (selectedCard.source.type === 'freecell' && selectedCard.source.cellIndex === cellIndex) {
+        const card = freeCells[cellIndex]
+        if (card) tryAutoMove(card, { type: 'freecell', cellIndex })
         clearSelection(); return
       }
       executeMove(selectedCard.cards, selectedCard.source, { type: 'freecell', cellIndex })
@@ -304,6 +296,7 @@ export default function GameBoard() {
     if (selectedCard) {
       const src = selectedCard.source
       if (src.type === 'tableau' && src.columnIndex === columnIndex && src.cardIndex === cardIndex) {
+        tryAutoMove(column[cardIndex], { type: 'tableau', columnIndex, cardIndex })
         clearSelection(); return
       }
       executeMove(selectedCard.cards, src, { type: 'tableau', columnIndex })
@@ -513,8 +506,6 @@ export default function GameBoard() {
       {showRecords && (
         <RecordsModal
           onClose={() => setShowRecords(false)}
-          onSelectDeal={handleSelectDeal}
-          currentDealNumber={dealNumber}
         />
       )}
 
