@@ -2,7 +2,7 @@
   "name": "freecell",
   "productName": "FreeCell",
   "private": true,
-  "version": "0.2.14",
+  "version": "0.2.15",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -24,11 +24,15 @@
     ],
     "mac": {
       "category": "public.app-category.games",
+      "electronLanguages": [
+        "ko",
+        "en-US"
+      ],
       "target": [
         {
           "target": "dmg",
           "arch": [
-            "universal"
+            "arm64"
           ]
         }
       ]
