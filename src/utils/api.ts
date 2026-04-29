@@ -38,17 +38,19 @@ export async function submitGlobalRecord(
   dealNumber: number,
   time: number,
   moves: number,
-): Promise<boolean> {
-  if (!API_URL) return false
+): Promise<'saved' | 'skipped' | 'fail'> {
+  if (!API_URL) return 'fail'
   try {
     const res = await fetch(`${API_URL}/api/records`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ playerName, dealNumber, time, moves }),
     })
-    return res.status === 201
+    if (res.status === 201) return 'saved'
+    if (res.status === 200) return 'skipped'
+    return 'fail'
   } catch {
-    return false
+    return 'fail'
   }
 }
 

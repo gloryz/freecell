@@ -144,7 +144,7 @@ export default function RecordsModal({ onClose, onSelectDeal, currentDealNumber 
             <p className="period-subtitle">
               {period === 'today'
                 ? `${new Date().toLocaleDateString('ko-KR')} 최고 기록 (플레이어별 1위)`
-                : '전체 기간 상위 100위'}
+                : '전체 기간 · 날짜별 플레이어 최고기록'}
             </p>
 
             {globalLoading && (

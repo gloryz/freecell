@@ -111,7 +111,7 @@ export default function GameBoard() {
   const [showRecords, setShowRecords] = useState(false)
   const [nickname, setNickname] = useState(getNickname)
   const [nicknameInput, setNicknameInput] = useState('')
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'ok' | 'fail'>('idle')
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'ok' | 'skipped' | 'fail'>('idle')
 
   // 포커스가 없을 때 타이머 및 자동 이동 정지
   useEffect(() => {
@@ -139,8 +139,8 @@ export default function GameBoard() {
     setSubmitStatus('idle')
     if (nickname) {
       setSubmitStatus('submitting')
-      submitGlobalRecord(nickname, dealNumber, elapsed, gameState.moves).then(ok => {
-        setSubmitStatus(ok ? 'ok' : 'fail')
+      submitGlobalRecord(nickname, dealNumber, elapsed, gameState.moves).then(result => {
+        setSubmitStatus(result === 'saved' ? 'ok' : result === 'skipped' ? 'skipped' : 'fail')
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -542,6 +542,7 @@ export default function GameBoard() {
                 <div className="win-submit-status">
                   {submitStatus === 'submitting' && <span className="submit-pending">🌐 글로벌 등록 중…</span>}
                   {submitStatus === 'ok' && <span className="submit-ok">✓ 글로벌 등록 완료 ({nickname})</span>}
+                  {submitStatus === 'skipped' && <span className="submit-ok">✓ 오늘 더 좋은 기록이 있어요 ({nickname})</span>}
                   {submitStatus === 'fail' && <span className="submit-fail">✗ 서버 연결 실패</span>}
                   {submitStatus === 'idle' && null}
                 </div>
@@ -562,8 +563,8 @@ export default function GameBoard() {
                         saveNickname(name)
                         setNickname(name)
                         setSubmitStatus('submitting')
-                        submitGlobalRecord(name, dealNumber, elapsed, moves).then(ok => {
-                          setSubmitStatus(ok ? 'ok' : 'fail')
+                        submitGlobalRecord(name, dealNumber, elapsed, moves).then(result => {
+                          setSubmitStatus(result === 'saved' ? 'ok' : result === 'skipped' ? 'skipped' : 'fail')
                         })
                       }
                     }}
@@ -577,8 +578,8 @@ export default function GameBoard() {
                       saveNickname(name)
                       setNickname(name)
                       setSubmitStatus('submitting')
-                      submitGlobalRecord(name, dealNumber, elapsed, moves).then(ok => {
-                        setSubmitStatus(ok ? 'ok' : 'fail')
+                      submitGlobalRecord(name, dealNumber, elapsed, moves).then(result => {
+                        setSubmitStatus(result === 'saved' ? 'ok' : result === 'skipped' ? 'skipped' : 'fail')
                       })
                     }}
                   >등록</button>
