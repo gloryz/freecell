@@ -22,8 +22,9 @@ NEW_VERSION=$(npm version patch --no-git-tag-version | tr -d 'v')
 # 2. Electron 빌드 & 압축
 npm run electron:build || exit 1
 cd release
+zip -9 "FreeCell-${NEW_VERSION}-arm64.zip" "FreeCell-${NEW_VERSION}-arm64.dmg"
 
-# 오래된 버전 파일 정리 (DMG만 유지, zip은 DMG보다 커서 불필요)
+# 오래된 버전 파일 정리
 find . -maxdepth 1 \( -name "FreeCell-*.dmg" -o -name "FreeCell-*.zip" -o -name "FreeCell-*.blockmap" \) \
   ! -name "FreeCell-${NEW_VERSION}-*" -delete
 
