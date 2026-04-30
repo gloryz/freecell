@@ -4,7 +4,9 @@ import { GameState, Card, CardSource } from '../types/card'
 import { msDeal } from '../utils/deck'
 import { updateRecord } from '../utils/records'
 import { submitGlobalRecord, getNickname, saveNickname } from '../utils/api'
+import { getSettings, Settings } from '../utils/settings'
 import RecordsModal from './RecordsModal'
+import SettingsModal from './SettingsModal'
 import {
   canPlaceOnTableau,
   canPlaceOnFoundation,
@@ -109,6 +111,8 @@ export default function GameBoard() {
   const [history, setHistory] = useState<GameState[]>([])
   const [windowFocused, setWindowFocused] = useState(true)
   const [showRecords, setShowRecords] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [settings, setSettings] = useState<Settings>(getSettings)
   const [nickname, setNickname] = useState(getNickname)
   const [nicknameInput, setNicknameInput] = useState('')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'ok' | 'skipped' | 'fail'>('idle')
@@ -264,10 +268,13 @@ export default function GameBoard() {
   // ---- Click handlers ----
   function handleFreeCellClick(cellIndex: number) {
     const { freeCells, selectedCard } = gameState
+    const singleClick = settings.autoMoveMode === 'single'
     if (selectedCard) {
       if (selectedCard.source.type === 'freecell' && selectedCard.source.cellIndex === cellIndex) {
-        const card = freeCells[cellIndex]
-        if (card) tryAutoMove(card, { type: 'freecell', cellIndex })
+        if (singleClick) {
+          const card = freeCells[cellIndex]
+          if (card) tryAutoMove(card, { type: 'freecell', cellIndex })
+        }
         clearSelection(); return
       }
       executeMove(selectedCard.cards, selectedCard.source, { type: 'freecell', cellIndex })
@@ -275,7 +282,11 @@ export default function GameBoard() {
     }
     const card = freeCells[cellIndex]
     if (!card) return
-    if (!tryAutoMove(card, { type: 'freecell', cellIndex })) {
+    if (singleClick) {
+      if (!tryAutoMove(card, { type: 'freecell', cellIndex })) {
+        selectCard(card, { type: 'freecell', cellIndex }, [card])
+      }
+    } else {
       selectCard(card, { type: 'freecell', cellIndex }, [card])
     }
   }
@@ -295,10 +306,11 @@ export default function GameBoard() {
   function handleTableauClick(columnIndex: number, cardIndex: number) {
     const { tableau, selectedCard } = gameState
     const column = tableau[columnIndex]
+    const singleClick = settings.autoMoveMode === 'single'
     if (selectedCard) {
       const src = selectedCard.source
       if (src.type === 'tableau' && src.columnIndex === columnIndex && src.cardIndex === cardIndex) {
-        tryAutoMove(column[cardIndex], { type: 'tableau', columnIndex, cardIndex })
+        if (singleClick) tryAutoMove(column[cardIndex], { type: 'tableau', columnIndex, cardIndex })
         clearSelection(); return
       }
       executeMove(selectedCard.cards, src, { type: 'tableau', columnIndex })
@@ -309,7 +321,7 @@ export default function GameBoard() {
     if (cardIndex + cards.length !== column.length) {
       flashInvalid(`tableau-${columnIndex}`); return
     }
-    if (cards.length === 1) {
+    if (singleClick && cards.length === 1) {
       if (tryAutoMove(cards[0], { type: 'tableau', columnIndex, cardIndex })) return
     }
     selectCard(cards[0], { type: 'tableau', columnIndex, cardIndex }, cards)
@@ -456,6 +468,7 @@ export default function GameBoard() {
             )}
             <button className="btn btn-records" onClick={() => setShowRecords(true)}>🏆 Records</button>
             <button className="btn" onClick={handleNewGame}>New Game</button>
+            <button className="btn btn-settings" onClick={() => setShowSettings(true)}>⚙</button>
           </div>
         </div>
 
@@ -510,6 +523,15 @@ export default function GameBoard() {
       {showRecords && (
         <RecordsModal
           onClose={() => setShowRecords(false)}
+        />
+      )}
+
+      {/* SETTINGS MODAL */}
+      {showSettings && (
+        <SettingsModal
+          settings={settings}
+          onClose={() => setShowSettings(false)}
+          onChange={setSettings}
         />
       )}
 

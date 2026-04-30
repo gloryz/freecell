@@ -1,0 +1,77 @@
+.settings-modal {
+  background: linear-gradient(160deg, #1a2a4a 0%, #0d1b35 100%);
+  border: 1px solid rgba(160, 200, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+  color: #e0eaff;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 28px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-modal h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #a0c8ff;
+  letter-spacing: 0.03em;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(160, 200, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.settings-options {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.settings-option {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  color: rgba(160, 200, 255, 0.5);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.settings-option:hover {
+  color: #a0c8ff;
+}
+
+.settings-option.active {
+  background: rgba(160, 200, 255, 0.18);
+  color: #a0c8ff;
+}
+
+.settings-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+}

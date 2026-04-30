@@ -95,6 +95,17 @@
   background: #5a4a7a;
 }
 
+.btn-settings {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  font-size: 1rem;
+  padding: 6px 10px;
+}
+
+.btn-settings:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .moves-counter {
   font-size: 1.1rem;
   font-weight: 600;
