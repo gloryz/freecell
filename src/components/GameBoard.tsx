@@ -468,7 +468,6 @@ export default function GameBoard() {
             )}
             <button className="btn btn-records" onClick={() => setShowRecords(true)}>🏆 Records</button>
             <button className="btn" onClick={handleNewGame}>New Game</button>
-            <button className="btn btn-settings" onClick={() => setShowSettings(true)}>⚙</button>
           </div>
         </div>
 
@@ -525,6 +524,9 @@ export default function GameBoard() {
           onClose={() => setShowRecords(false)}
         />
       )}
+
+      {/* SETTINGS BUTTON (fixed corner) */}
+      <button className="btn-settings-fixed" onClick={() => setShowSettings(true)}>⚙</button>
 
       {/* SETTINGS MODAL */}
       {showSettings && (
