@@ -310,7 +310,7 @@ export default function GameBoard() {
     if (selectedCard) {
       const src = selectedCard.source
       if (src.type === 'tableau' && src.columnIndex === columnIndex && src.cardIndex === cardIndex) {
-        if (singleClick) tryAutoMove(column[cardIndex], { type: 'tableau', columnIndex, cardIndex })
+        if (singleClick && selectedCard.cards.length === 1) tryAutoMove(column[cardIndex], { type: 'tableau', columnIndex, cardIndex })
         clearSelection(); return
       }
       executeMove(selectedCard.cards, src, { type: 'tableau', columnIndex })
