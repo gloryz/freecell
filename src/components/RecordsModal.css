@@ -277,3 +277,35 @@
   font-weight: 700;
   color: #a0c8ff;
 }
+
+/* Season sub-tabs */
+.season-view-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 3px;
+  margin-top: -4px;
+}
+
+.season-view-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: rgba(160, 200, 255, 0.5);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 5px 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.season-view-tab:hover {
+  color: #a0c8ff;
+}
+
+.season-view-tab.active {
+  background: rgba(160, 200, 255, 0.18);
+  color: #a0c8ff;
+}
