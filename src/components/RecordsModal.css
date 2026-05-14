@@ -256,3 +256,24 @@
 .btn-clear:hover {
   background: #7a3a3a;
 }
+
+.season-wins-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.season-wins-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(160, 200, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0;
+}
+
+.records-wins {
+  font-weight: 700;
+  color: #a0c8ff;
+}

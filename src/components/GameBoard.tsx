@@ -3,7 +3,7 @@ import './GameBoard.css'
 import { GameState, Card, CardSource } from '../types/card'
 import { msDeal } from '../utils/deck'
 import { updateRecord } from '../utils/records'
-import { submitGlobalRecord, getNickname, saveNickname } from '../utils/api'
+import { submitGlobalRecord, submitWin, getSeasonKey, getNickname, saveNickname } from '../utils/api'
 import { getSettings, Settings } from '../utils/settings'
 import RecordsModal from './RecordsModal'
 import SettingsModal from './SettingsModal'
@@ -143,7 +143,11 @@ export default function GameBoard() {
     setSubmitStatus('idle')
     if (nickname) {
       setSubmitStatus('submitting')
-      submitGlobalRecord(nickname, dealNumber, elapsed, gameState.moves).then(result => {
+      const seasonKey = getSeasonKey()
+      Promise.all([
+        submitGlobalRecord(nickname, dealNumber, elapsed, gameState.moves),
+        submitWin(nickname, seasonKey),
+      ]).then(([result]) => {
         setSubmitStatus(result === 'saved' ? 'ok' : result === 'skipped' ? 'skipped' : 'fail')
       })
     }

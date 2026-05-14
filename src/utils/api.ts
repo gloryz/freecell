@@ -66,6 +66,43 @@ export function getWeekInfo(weekOffset = 0): WeekInfo {
   return { label: `${year}년 ${week}주차`, range: `${fmt(m)} ~ ${fmt(sun)}`, year, week }
 }
 
+export function getSeasonKey(weekOffset = 0): string {
+  const { year, week } = getWeekInfo(weekOffset)
+  return `${year}-W${String(week).padStart(2, '0')}`
+}
+
+export interface SeasonWin {
+  playerName: string
+  wins: number
+  rank: number
+}
+
+export async function fetchSeasonWins(seasonKey: string): Promise<SeasonWin[]> {
+  if (!API_URL) return []
+  try {
+    const res = await fetch(`${API_URL}/api/wins?season=${encodeURIComponent(seasonKey)}`)
+    if (!res.ok) return []
+    const data = await res.json()
+    return (data.wins ?? []).map((w: Omit<SeasonWin, 'rank'>, i: number) => ({ ...w, rank: i + 1 }))
+  } catch {
+    return []
+  }
+}
+
+export async function submitWin(playerName: string, seasonKey: string): Promise<boolean> {
+  if (!API_URL) return false
+  try {
+    const res = await fetch(`${API_URL}/api/wins`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerName, season: seasonKey }),
+    })
+    return res.status === 201
+  } catch {
+    return false
+  }
+}
+
 export async function fetchGlobalRecords(opts?: {
   from?: string  // UTC ISO timestamp: 이 시각 이후
   to?: string    // UTC ISO timestamp: 이 시각 이전

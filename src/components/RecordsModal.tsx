@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRecords, clearRecords } from '../utils/records'
-import { fetchGlobalRecords, localDayStart, localDayEnd, localWeekStart, localWeekEnd, getWeekInfo, GlobalRecord } from '../utils/api'
+import { fetchGlobalRecords, fetchSeasonWins, localDayStart, localDayEnd, localWeekStart, localWeekEnd, getWeekInfo, getSeasonKey, GlobalRecord, SeasonWin } from '../utils/api'
 import './RecordsModal.css'
 
 interface RecordsModalProps {
@@ -25,16 +25,24 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
   const [globalError, setGlobalError] = useState(false)
   const [period, setPeriod] = useState<Period>('week')
   const [weekOffset, setWeekOffset] = useState(0)
+  const [seasonWins, setSeasonWins] = useState<SeasonWin[]>([])
 
   useEffect(() => {
     if (tab !== 'global') return
     setGlobalLoading(true)
     setGlobalError(false)
-    fetchGlobalRecords({
-      from: period === 'today' ? localDayStart(0) : period === 'week' ? localWeekStart(weekOffset) : undefined,
-      to:   period === 'today' ? localDayEnd()     : period === 'week' ? localWeekEnd(weekOffset)   : undefined,
-    })
-      .then(data => { setGlobalRecords(data) })
+    const isWeek = period === 'week'
+    Promise.all([
+      fetchGlobalRecords({
+        from: period === 'today' ? localDayStart(0) : isWeek ? localWeekStart(weekOffset) : undefined,
+        to:   period === 'today' ? localDayEnd()     : isWeek ? localWeekEnd(weekOffset)   : undefined,
+      }),
+      isWeek ? fetchSeasonWins(getSeasonKey(weekOffset)) : Promise.resolve([]),
+    ])
+      .then(([records, wins]) => {
+        setGlobalRecords(records)
+        setSeasonWins(wins)
+      })
       .catch(() => setGlobalError(true))
       .finally(() => setGlobalLoading(false))
   }, [tab, period, weekOffset])
@@ -190,6 +198,32 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
                 </table>
               </div>
             )}
+            {!globalLoading && !globalError && period === 'week' && seasonWins.length > 0 && (
+              <div className="season-wins-section">
+                <p className="season-wins-title">시즌 승리 순위</p>
+                <div className="records-table-wrap">
+                  <table className="records-table">
+                    <thead>
+                      <tr>
+                        <th>순위</th>
+                        <th>닉네임</th>
+                        <th>승리</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {seasonWins.map(w => (
+                        <tr key={w.playerName}>
+                          <td className="records-rank">{w.rank}</td>
+                          <td className="records-player">{w.playerName}</td>
+                          <td className="records-wins">{w.wins}승</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             <div className="records-footer">
               <button className="btn" onClick={onClose}>닫기</button>
             </div>
