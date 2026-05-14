@@ -16,7 +16,6 @@ function formatTime(seconds: number): string {
 
 type Tab = 'local' | 'global'
 type Period = 'today' | 'week' | 'all'
-type SeasonView = 'time' | 'wins'
 
 export default function RecordsModal({ onClose }: RecordsModalProps) {
   const [tab, setTab] = useState<Tab>('global')
@@ -27,7 +26,6 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
   const [period, setPeriod] = useState<Period>('week')
   const [weekOffset, setWeekOffset] = useState(0)
   const [seasonWins, setSeasonWins] = useState<SeasonWin[]>([])
-  const [seasonView, setSeasonView] = useState<SeasonView>('time')
 
   useEffect(() => {
     if (tab !== 'global') return
@@ -56,20 +54,12 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
   }
 
   const weekInfo = getWeekInfo(weekOffset)
-
-  const periodSubtitle =
-    period === 'today' ? `${new Date().toLocaleDateString('ko-KR')} 최고 기록 (플레이어별 1위)`
-    : period === 'week'
-      ? seasonView === 'time'
-        ? `${weekInfo.label} (${weekInfo.range}) · 날짜별 플레이어 최고기록`
-        : `${weekInfo.label} (${weekInfo.range}) · 총 승리 횟수`
-    : '전체 기간 · 날짜별 플레이어 최고기록'
-
+  const isSeasonView = tab === 'global' && period === 'week'
   const showDate = period !== 'today'
 
   return (
     <div className="win-overlay" onClick={onClose}>
-      <div className="records-modal" onClick={e => e.stopPropagation()}>
+      <div className={`records-modal${isSeasonView ? ' records-modal--wide' : ''}`} onClick={e => e.stopPropagation()}>
         <h2>Records</h2>
 
         {/* Main tabs */}
@@ -158,31 +148,95 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
               )}
             </div>
 
-            {/* Season sub-tabs */}
-            {period === 'week' && (
-              <div className="season-view-tabs">
-                <button
-                  className={`season-view-tab${seasonView === 'time' ? ' active' : ''}`}
-                  onClick={() => setSeasonView('time')}
-                >시즌 타임어택</button>
-                <button
-                  className={`season-view-tab${seasonView === 'wins' ? ' active' : ''}`}
-                  onClick={() => setSeasonView('wins')}
-                >시즌 승리횟수</button>
+            <p className="period-subtitle">
+              {period === 'today'
+                ? `${new Date().toLocaleDateString('ko-KR')} 최고 기록 (플레이어별 1위)`
+                : period === 'week'
+                ? `${weekInfo.label} (${weekInfo.range})`
+                : '전체 기간 · 날짜별 플레이어 최고기록'}
+            </p>
+
+            {globalLoading && <p className="records-empty">불러오는 중…</p>}
+            {!globalLoading && globalError && <p className="records-empty">서버에 연결할 수 없습니다.</p>}
+
+            {/* 시즌: 좌우 2열 */}
+            {!globalLoading && !globalError && period === 'week' && (
+              <div className="season-split">
+                {/* 왼쪽: 타임어택 */}
+                <div className="season-col">
+                  <p className="season-col-title">타임어택</p>
+                  {globalRecords.length === 0
+                    ? <p className="records-empty">기록이 없습니다.</p>
+                    : (
+                      <div className="records-table-wrap">
+                        <table className="records-table">
+                          <thead>
+                            <tr>
+                              <th>순위</th>
+                              <th>닉네임</th>
+                              <th>시간</th>
+                              <th>이동</th>
+                              {showDate && <th>날짜</th>}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {globalRecords.map(r => (
+                              <tr key={r.id}>
+                                <td className="records-rank">{r.rank}</td>
+                                <td className="records-player">{r.playerName}</td>
+                                <td className="records-time">{formatTime(r.time)}</td>
+                                <td>{r.moves}</td>
+                                {showDate && (
+                                  <td className="records-date">
+                                    {new Date(r.date).toLocaleDateString('ko-KR')}
+                                  </td>
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )
+                  }
+                </div>
+
+                {/* 구분선 */}
+                <div className="season-divider" />
+
+                {/* 오른쪽: 승리횟수 */}
+                <div className="season-col">
+                  <p className="season-col-title">승리횟수</p>
+                  {seasonWins.length === 0
+                    ? <p className="records-empty">기록이 없습니다.</p>
+                    : (
+                      <div className="records-table-wrap">
+                        <table className="records-table">
+                          <thead>
+                            <tr>
+                              <th>순위</th>
+                              <th>닉네임</th>
+                              <th>승리</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {seasonWins.map(w => (
+                              <tr key={w.playerName}>
+                                <td className="records-rank">{w.rank}</td>
+                                <td className="records-player">{w.playerName}</td>
+                                <td className="records-wins">{w.wins}승</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )
+                  }
+                </div>
               </div>
             )}
 
-            <p className="period-subtitle">{periodSubtitle}</p>
-
-            {globalLoading && (
-              <p className="records-empty">불러오는 중…</p>
-            )}
-            {!globalLoading && globalError && (
-              <p className="records-empty">서버에 연결할 수 없습니다.</p>
-            )}
-
-            {/* 타임어택 테이블 */}
-            {!globalLoading && !globalError && (period !== 'week' || seasonView === 'time') && (
+            {/* 오늘 / 전체: 단일 테이블 */}
+            {!globalLoading && !globalError && period !== 'week' && (
               globalRecords.length === 0
                 ? <p className="records-empty">{period === 'today' ? '오늘 아직 기록이 없습니다.' : '기록이 없습니다.'}</p>
                 : (
@@ -211,34 +265,6 @@ export default function RecordsModal({ onClose }: RecordsModalProps) {
                                 {new Date(r.date).toLocaleDateString('ko-KR')}
                               </td>
                             )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )
-            )}
-
-            {/* 승리횟수 테이블 */}
-            {!globalLoading && !globalError && period === 'week' && seasonView === 'wins' && (
-              seasonWins.length === 0
-                ? <p className="records-empty">이번 시즌 아직 승리 기록이 없습니다.</p>
-                : (
-                  <div className="records-table-wrap">
-                    <table className="records-table">
-                      <thead>
-                        <tr>
-                          <th>순위</th>
-                          <th>닉네임</th>
-                          <th>승리</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {seasonWins.map(w => (
-                          <tr key={w.playerName}>
-                            <td className="records-rank">{w.rank}</td>
-                            <td className="records-player">{w.playerName}</td>
-                            <td className="records-wins">{w.wins}승</td>
                           </tr>
                         ))}
                       </tbody>
