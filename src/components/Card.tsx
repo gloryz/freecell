@@ -6,6 +6,7 @@ interface CardProps {
   card: CardType
   selected?: boolean
   dragging?: boolean
+  hint?: boolean
   onClick?: () => void
   onDoubleClick?: () => void
   onDragStart?: (e: React.DragEvent) => void
@@ -19,6 +20,7 @@ export default function Card({
   card,
   selected = false,
   dragging = false,
+  hint = false,
   onClick,
   onDoubleClick,
   onDragStart,
@@ -33,7 +35,7 @@ export default function Card({
 
   return (
     <div
-      className={`card ${color}${selected ? ' selected' : ''}${dragging ? ' dragging' : ''}`}
+      className={`card ${color}${selected ? ' selected' : ''}${dragging ? ' dragging' : ''}${hint ? ' ace-hint' : ''}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       draggable={!!onDragStart}

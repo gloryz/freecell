@@ -112,10 +112,18 @@ export default function GameBoard() {
   const [windowFocused, setWindowFocused] = useState(true)
   const [showRecords, setShowRecords] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [aceHint, setAceHint] = useState(true)
   const [settings, setSettings] = useState<Settings>(getSettings)
   const [nickname, setNickname] = useState(getNickname)
   const [nicknameInput, setNicknameInput] = useState('')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'ok' | 'skipped' | 'fail'>('idle')
+
+  // 게임 시작 시 에이스 힌트 1.4초 후 해제
+  useEffect(() => {
+    setAceHint(true)
+    const t = setTimeout(() => setAceHint(false), 1400)
+    return () => clearTimeout(t)
+  }, [dealNumber])
 
   // 포커스가 없을 때 타이머 및 자동 이동 정지
   useEffect(() => {
@@ -442,6 +450,7 @@ export default function GameBoard() {
                   selected={isSelected}
                   dragging={isDragging}
                   hasSelection={hasSelection && !isSelected}
+                  aceHint={aceHint}
                   onClick={() => handleFreeCellClick(idx)}
                   onDoubleClick={() => handleFreeCellDoubleClick(idx)}
                   onDragStart={() => handleFreeCellDragStart(idx)}
@@ -510,6 +519,7 @@ export default function GameBoard() {
               selectedCards={selectedCards}
               draggedIds={draggedIds}
               hasSelection={hasSelection}
+              aceHint={aceHint}
               onClick={(cardIdx) => handleTableauClick(colIdx, cardIdx)}
               onDoubleClick={(cardIdx) => handleTableauDoubleClick(colIdx, cardIdx)}
               onEmptyClick={() => handleTableauEmptyClick(colIdx)}
