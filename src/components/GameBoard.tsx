@@ -551,6 +551,11 @@ export default function GameBoard() {
         />
       )}
 
+      {/* BLUR OVERLAY (window unfocused) */}
+      {!windowFocused && !paused && !won && (
+        <div className="blur-overlay" />
+      )}
+
       {/* PAUSE OVERLAY */}
       {paused && !won && (
         <div className="pause-overlay" onClick={handleTogglePause}>

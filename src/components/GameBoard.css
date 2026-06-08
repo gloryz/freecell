@@ -168,6 +168,14 @@
   background: #5a6a9a;
 }
 
+.blur-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  z-index: 900;
+}
+
 .pause-overlay {
   position: fixed;
   inset: 0;
