@@ -214,6 +214,8 @@ export default function GameBoard() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (showRecords) { setShowRecords(false); return }
+        if (showSettings) { setShowSettings(false); return }
         setGameState(prev => ({ ...prev, selectedCard: null }))
       } else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
@@ -225,7 +227,7 @@ export default function GameBoard() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [handleUndo])
+  }, [handleUndo, handleNewGame, showRecords, showSettings])
 
   // ---- Selection helpers ----
   function selectCard(card: Card, source: CardSource, cards: Card[]) {
