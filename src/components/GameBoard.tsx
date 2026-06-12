@@ -176,7 +176,7 @@ export default function GameBoard() {
         if (!m) return s
         return applyMove(s, [m.card], m.source, { type: 'foundation', suitIndex: m.suitIndex })
       })
-    }, 200)
+    }, 80)
     return () => clearTimeout(timer)
   }, [gameState, paused, windowFocused])
 
