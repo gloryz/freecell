@@ -18,6 +18,12 @@ type Tab = 'local' | 'global'
 type Period = 'today' | 'week' | 'all'
 
 export default function RecordsModal({ onClose }: RecordsModalProps) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onClose])
+
   const [tab, setTab] = useState<Tab>('global')
   const [records, setRecords] = useState(getRecords)
   const [globalRecords, setGlobalRecords] = useState<GlobalRecord[]>([])

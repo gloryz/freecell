@@ -10,6 +10,7 @@ interface TableauColumnProps {
   draggedIds: Set<string>
   hasSelection: boolean
   aceHint: boolean
+  twoHint: boolean
   onClick: (cardIndex: number) => void
   onDoubleClick: (cardIndex: number) => void
   onEmptyClick: () => void
@@ -26,6 +27,7 @@ export default function TableauColumn({
   draggedIds,
   hasSelection,
   aceHint,
+  twoHint,
   onClick,
   onDoubleClick,
   onEmptyClick,
@@ -78,7 +80,7 @@ export default function TableauColumn({
               card={card}
               selected={isSelected}
               dragging={isDragging}
-              hint={aceHint && card.rank === 1}
+              hint={(aceHint && card.rank === 1) || (twoHint && card.rank === 2)}
               onClick={() => onClick(idx)}
               onDoubleClick={() => onDoubleClick(idx)}
               onDragStart={() => onDragStart(idx)}

@@ -113,16 +113,19 @@ export default function GameBoard() {
   const [showRecords, setShowRecords] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [aceHint, setAceHint] = useState(true)
+  const [twoHint, setTwoHint] = useState(false)
   const [settings, setSettings] = useState<Settings>(getSettings)
   const [nickname, setNickname] = useState(getNickname)
   const [nicknameInput, setNicknameInput] = useState('')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'ok' | 'skipped' | 'fail'>('idle')
 
-  // 게임 시작 시 에이스 힌트 1.4초 후 해제
+  // 게임 시작 시 A → 2 순서로 깜빡임
   useEffect(() => {
     setAceHint(true)
-    const t = setTimeout(() => setAceHint(false), 1400)
-    return () => clearTimeout(t)
+    setTwoHint(false)
+    const t1 = setTimeout(() => { setAceHint(false); setTwoHint(true) }, 1400)
+    const t2 = setTimeout(() => setTwoHint(false), 2800)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [dealNumber])
 
   // 포커스가 없을 때 타이머 및 자동 이동 정지
@@ -215,6 +218,9 @@ export default function GameBoard() {
       } else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         handleUndo()
+      } else if (e.key === 'F1') {
+        e.preventDefault()
+        handleNewGame()
       }
     }
     window.addEventListener('keydown', handler)
@@ -451,6 +457,7 @@ export default function GameBoard() {
                   dragging={isDragging}
                   hasSelection={hasSelection && !isSelected}
                   aceHint={aceHint}
+                  twoHint={twoHint}
                   onClick={() => handleFreeCellClick(idx)}
                   onDoubleClick={() => handleFreeCellDoubleClick(idx)}
                   onDragStart={() => handleFreeCellDragStart(idx)}
@@ -520,6 +527,7 @@ export default function GameBoard() {
               draggedIds={draggedIds}
               hasSelection={hasSelection}
               aceHint={aceHint}
+              twoHint={twoHint}
               onClick={(cardIdx) => handleTableauClick(colIdx, cardIdx)}
               onDoubleClick={(cardIdx) => handleTableauDoubleClick(colIdx, cardIdx)}
               onEmptyClick={() => handleTableauEmptyClick(colIdx)}

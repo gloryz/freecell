@@ -9,6 +9,7 @@ interface FreeCellSlotProps {
   dragging: boolean
   hasSelection: boolean
   aceHint: boolean
+  twoHint: boolean
   onClick: () => void
   onDoubleClick: () => void
   onDragStart: () => void
@@ -24,6 +25,7 @@ export default function FreeCellSlot({
   dragging,
   hasSelection,
   aceHint,
+  twoHint,
   onClick,
   onDoubleClick,
   onDragStart,
@@ -40,7 +42,7 @@ export default function FreeCellSlot({
         card={card}
         selected={selected}
         dragging={dragging}
-        hint={aceHint && card.rank === 1}
+        hint={(aceHint && card.rank === 1) || (twoHint && card.rank === 2)}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         onDragStart={(e) => { e.stopPropagation(); onDragStart() }}
